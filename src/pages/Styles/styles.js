@@ -36,7 +36,8 @@ export const styles = StyleSheet.create({
       textCadastre:{
         textAlign: 'center',
         fontSize: 18,
-        marginTop: 15,
+        marginTop: 0,
+        marginBottom: 40,
         color: "#A9A9A9"
       },
 

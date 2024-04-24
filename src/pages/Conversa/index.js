@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, Alert, FlatList, View, TouchableOpacity, Image } from 'react-native';
 import { collection, getDocs } from "firebase/firestore"; 
 import { db } from "../config/firebase"
-
+import { Divider } from '@rneui/themed';
 
 import { Avatar, Icon } from '@rneui/themed';
 
@@ -34,7 +34,7 @@ export default function App({ navigation }) {
         data={userList}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-        <TouchableOpacity onPress={() => navigation.navigate('Chat', item.id,item.nome )}>
+          <TouchableOpacity onPress={() => navigation.navigate('Chat', { userId: item.id, userName: item.nome })}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }} margin={10}>
           <Image
               source={{ uri: item.url}} // Aqui você usa a URL do avatar
@@ -42,9 +42,10 @@ export default function App({ navigation }) {
             />
           <View style={{ marginLeft: 10 }}> 
             <Text>{item.nome}</Text>
-            <Text>Email: {item.email}</Text>
+            <Text>Oi {item.msg}</Text>
             </View>
           </View>
+          <Divider style={{ marginVertical: 10 }} />
           </TouchableOpacity>
         )}
       />

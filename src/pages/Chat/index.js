@@ -3,19 +3,19 @@ import { View } from 'react-native';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import { useRoute } from '@react-navigation/native';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
-import { database } from '../config/firebase'; // Importe sua configuração do Firebase aqui
+import {db} from '../config/firebase' // Importe sua configuração do Firebase aqui
 
 export default function Chat() {
     const [messages, setMessages] = useState([]);
     const route = useRoute();
-    const { id, name } = route.params;
+    const { userId, userName } = route.params;
 
    
-    console.warn("id: "+id+ "- usuario: "+ name);
+    console.warn("id: "+userId+ "- usuario: "+ userName);
 
     useEffect(() => {
         async function getMessages() {
-            const values = query(collection(database, 'chats'), orderBy('createdAt', 'desc'));
+            const values = query(collection(db, 'chats'), orderBy('createdAt', 'desc'));
 
             onSnapshot(values, (snapshot) => {
                 setMessages(snapshot.docs.map(doc => ({
@@ -43,20 +43,43 @@ export default function Chat() {
                 };
 
                 // Adicione a mensagem ao Firestore
-                addDoc(collection(database, "chats"), messageToAdd);
+                salvarConversaFirestore(userId, userName, messageToAdd)
+               
             } catch (error) {
                 console.error("Erro ao enviar mensagem para o Firebase:", error);
             }
         }
     }, []);
 
+
+    
+// criar a coleção users no firestore database
+async function salvarConversaFirestore(userId, userName,message) {
+  
+    try {
+      const docRef = await addDoc(collection(db, "chats"), {
+        usuarioId: userId,
+        mensagens: message,
+        usuarioDestinatario: userName,
+        usuarioRemetente: "usuario logado"
+
+
+      });
+      Alert.alert('Mensagem', 'Mensagem enviada com sucesso!');
+    
+    } catch (e) {
+      Alert.alert('Erro', 'Erro ao enviar mensagem');
+     
+    }
+  }
+
     return (
         <View style={{ flex: 1, padding: 10 }}>
             <GiftedChat
                 messages={messages}
-                onSend={mensagemEnviada}
+                onSend={mensagemEnviada} 
                 user={{
-                    _id: name,
+                    _id: userId,
                 }}
             placeholder="Digite uma mensagem..."
             renderAvatar={null} // Não exibe avatares

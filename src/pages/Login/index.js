@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
-import { View, TextInput,  Alert, Text, TouchableOpacity,  Button } from 'react-native';
+import { View, TextInput,  Alert, Text, TouchableOpacity} from 'react-native';
+import { Button, Image } from '@rneui/themed';
 
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import { styles } from '../Styles/styles';
 
+import logoChat from '../../images/icone_lero_lero.png'; 
+
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const [loading, setLoading] = useState(false);
 
   const verificarCampoEmail = () => {
     if (email.trim() === '') {
@@ -17,6 +22,7 @@ export default function Login({ navigation }) {
       Alert.alert('Erro', 'Por favor, preencha o campo de senha');
     } else {
         /// realizar login
+      setLoading(true);
       loginUserWithEmailAndPassword(email, password);
     
     }
@@ -29,7 +35,7 @@ export default function Login({ navigation }) {
     .then((userCredential) => {
       // Signed in 
       const user = userCredential.user;
-    
+      
       Alert.alert("Login",'Login realizado com sucesso!', [
         {
           text:"Cancelar", 
@@ -54,6 +60,10 @@ export default function Login({ navigation }) {
 
   return (
     <View style={styles.container}>
+        <Image
+          source={logoChat}
+          style={{ width: 100, height: 100, marginBottom:20 }}
+         /> 
       <View style={styles.boxInput}>
         <TextInput
           style={styles.input}
@@ -68,13 +78,48 @@ export default function Login({ navigation }) {
           value={password}
           onChangeText={text => setPassword(text)}
         />
-        <Button
-          title="Entrar"
-          onPress={verificarCampoEmail}
-        />
 
-      <TouchableOpacity onPress={() => navigation.navigate('CadastroUsuario')}>
-        <Text style={styles.textCadastre}>Cadastre-se</Text>
+         <Button
+               title="Entrar"
+               loading={loading} // Use o estado de loading aqui
+              titleStyle={{ fontWeight: '700' }}
+              buttonStyle={{
+                backgroundColor: '#00BFFF',
+                borderColor: 'transparent',
+                borderWidth: 4,
+                borderRadius: 10,
+                paddingVertical: 10,
+              }}
+              containerStyle={{
+                width: 200,
+                marginHorizontal: 70,
+                marginVertical: 10,
+              }}
+              onPress={verificarCampoEmail}
+            /> 
+
+      <TouchableOpacity>
+        <Text style={styles.textCadastre}>Esqueceu sua Senha?</Text>
+       </TouchableOpacity>  
+
+      <TouchableOpacity >
+        <Button
+          title="Criar Nova Conta"
+          titleStyle={{ fontWeight: '700' }}
+              buttonStyle={{
+                backgroundColor: '#00BFFF',
+                borderColor: 'transparent',
+                borderWidth: 4,
+                borderRadius: 10,
+                paddingVertical: 10,
+              }}
+              containerStyle={{
+                width: 200,
+                marginHorizontal: 70,
+                marginVertical: 10,
+              }}
+          onPress={() => navigation.navigate('CadastroUsuario')}
+        />
        </TouchableOpacity>
 
       </View>
