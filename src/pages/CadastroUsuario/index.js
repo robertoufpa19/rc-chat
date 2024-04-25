@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, Alert } from 'react-native';
-import { Button } from '@rneui/themed';
+import { Button,  Image } from '@rneui/themed';
 
 import { styles } from '../Styles/styles';
 
@@ -8,14 +8,14 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { collection, addDoc } from 'firebase/firestore';
 
 import {db} from '../config/firebase'
-
+import iconUser from '../../images/iconUser.png';
 
 
 export default function Cadastre({ navigation }) {
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    
+    const [loading, setLoading] = useState(false);
   
     const verificarCampoEmail = () => {
      if (nome.trim() === '') {
@@ -38,6 +38,7 @@ export default function Cadastre({ navigation }) {
       createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in 
+        setLoading(true);
         const user = userCredential.user;
         salvarUsuariosFirestore(nome, email, password);
 
@@ -75,8 +76,11 @@ async function salvarUsuariosFirestore(nome, email, password) {
   
     return (
       <View style={styles.container}>
+          <Image
+          source={iconUser}
+          style={{ width: 100, height: 100, marginBottom:20 }}
+         /> 
         <View style={styles.boxInput}>
-
         <TextInput
             style={styles.input}
             placeholder="Nome Usuario"
@@ -98,8 +102,23 @@ async function salvarUsuariosFirestore(nome, email, password) {
             onChangeText={text => setPassword(text)}
           />
           <Button
+           title="Cadastrar"
+           loading={loading} // Use o estado de loading aqui
+          titleStyle={{ fontWeight: '700' }}
+          buttonStyle={{
+            backgroundColor: '#00BFFF',
+            borderColor: 'transparent',
+            borderWidth: 4,
+            borderRadius: 10,
+            paddingVertical: 10,
+          }}
+          containerStyle={{
+            width: 200,
+            marginHorizontal: 70,
+            marginVertical: 10,
+          }}
            style={styles.button}
-            title="Cadastrar"
+           
             onPress={verificarCampoEmail}
           />
         </View>

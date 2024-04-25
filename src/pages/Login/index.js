@@ -35,23 +35,19 @@ export default function Login({ navigation }) {
     .then((userCredential) => {
       // Signed in 
       const user = userCredential.user;
+
+      if(user != null){
+        setLoading(false);
+        navigation.navigate('Conversa')
+      }else{
+        Alert.alert('Erro', 'usuario não cadastrado');
+      }
       
-      Alert.alert("Login",'Login realizado com sucesso!', [
-        {
-          text:"Cancelar", 
-        },
-        { 
-          text:"Ok",
-          onPress: () => navigation.navigate('Conversa')
-        },
-       ])
-      
-      // ...
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-
+      setLoading(false);
       Alert.alert('Erro', 'Erro ao realizar login'+errorCode);
     });
 
@@ -99,28 +95,15 @@ export default function Login({ navigation }) {
             /> 
 
       <TouchableOpacity>
-        <Text style={styles.textCadastre}>Esqueceu sua Senha?</Text>
+        <Text style={styles.textEsqueceSenha}>Esqueceu sua Senha?</Text>
        </TouchableOpacity>  
 
-      <TouchableOpacity >
-        <Button
-          title="Criar Nova Conta"
-          titleStyle={{ fontWeight: '700' }}
-              buttonStyle={{
-                backgroundColor: '#00BFFF',
-                borderColor: 'transparent',
-                borderWidth: 4,
-                borderRadius: 10,
-                paddingVertical: 10,
-              }}
-              containerStyle={{
-                width: 200,
-                marginHorizontal: 70,
-                marginVertical: 10,
-              }}
-          onPress={() => navigation.navigate('CadastroUsuario')}
-        />
-       </TouchableOpacity>
+
+       <TouchableOpacity
+        onPress={() => navigation.navigate('CadastroUsuario')}  
+       >
+        <Text style={styles.textCadastre}>Criar Nova Conta</Text>
+       </TouchableOpacity> 
 
       </View>
     </View>
