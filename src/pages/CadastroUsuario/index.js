@@ -66,6 +66,7 @@ async function salvarUsuariosFirestore(nome, email, password) {
     const docRef = await addDoc(collection(db, "users"), {
       nome: nome,
       email: email,
+      fotoPerfil: '',
       senha: password
     });
     console.log("Documento escrito com ID: ", docRef.id);
