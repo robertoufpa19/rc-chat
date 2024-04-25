@@ -38,7 +38,7 @@ export default function Login({ navigation }) {
 
       if(user != null){
         setLoading(false);
-        navigation.navigate('Conversa')
+        navigation.navigate('Conversa');
       }else{
         Alert.alert('Erro', 'usuario não cadastrado');
       }

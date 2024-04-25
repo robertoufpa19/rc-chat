@@ -18,7 +18,8 @@ export default function App() {
          
         <Stack.Screen name="Chat" component={Chat} />
         <Stack.Screen name="Conversa" component={Conversa} />
-        <Stack.Screen name="CadastroUsuario" component={CadastroUsuario}/>
+        <Stack.Screen name="CadastroUsuario" component={CadastroUsuario}
+        options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

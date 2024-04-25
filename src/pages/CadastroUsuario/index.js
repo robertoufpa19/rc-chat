@@ -25,7 +25,8 @@ export default function Cadastre({ navigation }) {
       } else if (password.trim() === '') {
         Alert.alert('Erro', 'Por favor, preencha o campo de senha');
       } else {
-  
+
+        setLoading(true);
         cadastrarUsuario(email, password);
       
       }
@@ -38,9 +39,15 @@ export default function Cadastre({ navigation }) {
       createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in 
-        setLoading(true);
         const user = userCredential.user;
-        salvarUsuariosFirestore(nome, email, password);
+        if(user != null){
+          setLoading(false);
+          salvarUsuariosFirestore(nome, email, password);
+          navigation.navigate('Conversa');
+        }else{
+          Alert.alert('Erro', 'erro ao cadastrar usuario');
+        }
+       
 
   })
   .catch((error) => {
@@ -52,8 +59,6 @@ export default function Cadastre({ navigation }) {
 
 };
 
-
-
 // criar a coleção users no firestore database
 async function salvarUsuariosFirestore(nome, email, password) {
   
@@ -63,7 +68,6 @@ async function salvarUsuariosFirestore(nome, email, password) {
       email: email,
       senha: password
     });
-    Alert.alert('Cadastro', 'Cadastro realizado com sucesso!');
     console.log("Documento escrito com ID: ", docRef.id);
   } catch (e) {
     Alert.alert('Erro', 'Erro ao cadastrar usuário');
