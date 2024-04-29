@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Alert } from 'react-native';
+import { View, Alert, ActivityIndicator } from 'react-native';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import { useRoute } from '@react-navigation/native';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -9,6 +9,8 @@ export default function Chat() {
     const [messages, setMessages] = useState([]);
     const route = useRoute();
     const { userId, userName } = route.params;
+
+    const [loading, setLoading] = useState(true); // Estado para controlar o ActivityIndicator
 
     useEffect(() => {
         const unsubscribe = carregarMensagens();
@@ -25,6 +27,7 @@ export default function Chat() {
             user: doc.data().user,
         }));
         setMessages(loadedMessages); 
+        setLoading(false); // Defina o estado de carregamento como falso quando as mensagens forem carregadas
     });
 };
 
@@ -67,28 +70,32 @@ export default function Chat() {
 
     return (
         <View style={{ flex: 1, padding: 10 }}>
-            <GiftedChat
-                messages={messages}
-                onSend={enviarMensagem}
-                user={{
-                    _id: userId,
-                }}
-                placeholder="Digite uma mensagem..."
-                renderAvatar={null} // Não exibe avatares
-                renderBubble={(props) => ( // Personaliza o estilo das bolhas de mensagem
-                    <Bubble
-                        {...props}
-                        wrapperStyle={{
-                            right: {
-                                backgroundColor: '#0084ff', // Cor de fundo das mensagens enviadas
-                            },
-                            left: {
-                                backgroundColor: '#f0f0f0', // Cor de fundo das mensagens recebidas
-                            },
-                        }}
-                    />
-                )}
-            />
+            {loading ? (
+                <ActivityIndicator size="large" color="#00BFFF" /> // Exibe o ActivityIndicator enquanto as mensagens estão sendo carregadas
+            ) : (
+                <GiftedChat
+                    messages={messages}
+                    onSend={enviarMensagem}
+                    user={{
+                        _id: userId,
+                    }}
+                    placeholder="Digite uma mensagem..."
+                    renderAvatar={null} // Não exibe avatares
+                    renderBubble={(props) => ( // Personaliza o estilo das bolhas de mensagem
+                        <Bubble
+                            {...props}
+                            wrapperStyle={{
+                                right: {
+                                    backgroundColor: '#0084ff', // Cor de fundo das mensagens enviadas
+                                },
+                                left: {
+                                    backgroundColor: '#f0f0f0', // Cor de fundo das mensagens recebidas
+                                },
+                            }}
+                        />
+                    )}
+                />
+            )}
         </View>
     );
 }
