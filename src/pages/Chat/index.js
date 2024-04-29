@@ -8,7 +8,7 @@ import { db } from '../config/firebase'; // Importe sua configuração do Fireba
 export default function Chat() {
     const [messages, setMessages] = useState([]);
     const route = useRoute();
-    const { userId, userName } = route.params;
+    const { userId, userName, userFoto } = route.params;
 
     const [loading, setLoading] = useState(true); // Estado para controlar o ActivityIndicator
 
@@ -62,7 +62,7 @@ export default function Chat() {
                 user: message.user,
                 userName: userName,
             });
-            Alert.alert('Mensagem', 'Mensagem enviada com sucesso!');
+           // Alert.alert('Mensagem', 'Mensagem enviada com sucesso!');
         } catch (e) {
             Alert.alert('Erro', 'Erro ao enviar mensagem');
         }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text, Alert, FlatList, View, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
-import { collection, getDocs } from "firebase/firestore"; 
+import { collection, getDocs, query, orderBy, limit, getDoc } from "firebase/firestore"; 
 import { db } from "../config/firebase"
 import { Divider } from '@rneui/themed';
 
@@ -15,10 +15,10 @@ export default function App({ navigation }) {
       try {
         const querySnapshot = await getDocs(collection(db, "users"));
         const users = [];
-        querySnapshot.forEach((doc) => {
-          // Para cada documento, extraia os dados e adicione à lista de usuários
-          users.push({ id: doc.id, ...doc.data() });
-        });
+        for await (const doc of querySnapshot.docs) {
+          const lastMessage = await getLastMessage(doc.id); // Obter a última mensagem para cada usuário
+          users.push({ id: doc.id, ...doc.data(), UltimaMsg: lastMessage });
+        }
         setUserList(users);
         setIsLoading(false); // Marca a busca como concluída
       } catch (error) {
@@ -28,6 +28,20 @@ export default function App({ navigation }) {
     }
     buscarUserList();
   }, []); // Executar apenas uma vez ao montar o componente
+
+  async function getLastMessage(userId) { 
+    const chatQuery = query(
+      collection(db, 'chats'),
+      orderBy('createdAt', 'desc'),
+      limit(1),
+    );
+    const chatSnapshot = await getDocs(chatQuery);
+    if (!chatSnapshot.empty) {
+      const lastMessage = chatSnapshot.docs[0].data();
+      return lastMessage.text; // Retorna apenas o texto da última mensagem
+    }
+    return ''; // Retorna vazio se não houver mensagens
+  }
 
   
   return (
@@ -42,7 +56,7 @@ export default function App({ navigation }) {
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate("Chat", { userId: item.id, userName: item.nome })
+                navigation.navigate("Chat", { userId: item.id, userName: item.nome,userFoto: item.fotoPerfil })
               }
             >
               <View style={{ flexDirection: "row", alignItems: "center" }} margin={10}>
@@ -56,7 +70,7 @@ export default function App({ navigation }) {
                 />
                 <View style={{ marginLeft: 10 }}>
                   <Text>{item.nome}</Text>
-                  <Text>Oi {item.UltimaMsg}</Text>
+                  <Text>{item.UltimaMsg}</Text>
                 </View>
               </View>
               <Divider style={{ marginVertical: 10 }} />
