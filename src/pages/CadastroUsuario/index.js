@@ -5,8 +5,7 @@ import { Button,  Image } from '@rneui/themed';
 import { styles } from '../Styles/styles';
 
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { collection, addDoc } from 'firebase/firestore';
-
+import { doc, setDoc } from "firebase/firestore";
 import {db} from '../config/firebase'
 import iconUser from '../../images/iconUser.png';
 
@@ -32,49 +31,45 @@ export default function Cadastre({ navigation }) {
       }
     };
     
-  
     const cadastrarUsuario = async () => {
-    
+
       const auth = getAuth();
-      createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in 
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        if(user != null){
+    
+        if (user) {
           setLoading(false);
-          salvarUsuariosFirestore(nome, email, password);
+          // Passando o ID do usuário para salvar no Firestore
+          salvarUsuariosFirestore(user.uid, nome, email, password);
           navigation.navigate('Conversa');
-        }else{
-          Alert.alert('Erro', 'erro ao cadastrar usuario');
+        } else {
+          Alert.alert('Erro', 'Erro ao cadastrar usuário');
         }
-       
+      } catch (error) {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        Alert.alert('Erro', 'Erro: ' + errorCode);
+      }
+    };
+    
+    // Criar a coleção users no Firestore database
+    async function salvarUsuariosFirestore(userID, nome, email, password) {
+      try {
+      await setDoc(doc(db, "users", userID), {
+          id: userID, // Adicionando o ID do usuário
+          nome: nome,
+          email: email,
+          fotoPerfil: '',
+          senha: password
+      });
 
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    Alert.alert('Erro', 'erro: '+errorCode);
-    // ..
-  });
-
-};
-
-// criar a coleção users no firestore database
-async function salvarUsuariosFirestore(nome, email, password) {
-  
-  try {
-    const docRef = await addDoc(collection(db, "users"), {
-      nome: nome,
-      email: email,
-      fotoPerfil: '',
-      senha: password
-    });
-    console.log("Documento escrito com ID: ", docRef.id);
-  } catch (e) {
-    Alert.alert('Erro', 'Erro ao cadastrar usuário');
-    console.error("Erro ao adicionar documento: ", e);
-  }
-}
+      
+      } catch (e) {
+        Alert.alert('Erro', 'Erro ao cadastrar usuário');
+        console.error("Erro ao adicionar documento: ", e);
+      }
+    }
 
 
     

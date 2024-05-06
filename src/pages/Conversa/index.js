@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Text, Alert, FlatList, View, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { collection, getDocs, query, orderBy, limit, getDoc } from "firebase/firestore"; 
-import { db } from "../config/firebase"
+import { db} from "../config/firebase";
+import { getAuth } from "firebase/auth";
 import { Divider } from '@rneui/themed';
 
 import { Avatar, Icon } from '@rneui/themed';
@@ -15,17 +16,30 @@ export default function App({ navigation }) {
       try {
         const querySnapshot = await getDocs(collection(db, "users"));
         const users = [];
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+
         for await (const doc of querySnapshot.docs) {
           const lastMessage = await getLastMessage(doc.id); // Obter a última mensagem para cada usuário
-          users.push({ id: doc.id, ...doc.data(), UltimaMsg: lastMessage });
+          const userData = { id: doc.id, ...doc.data(), UltimaMsg: lastMessage };
+  
+          // verificar se o id do usuario autenticado é igual o da lista de usuario
+          // se for igual não exibir ele na lista de amigos
+          if (currentUser && doc.id !== currentUser.uid) {
+            users.push(userData);
+          }
         }
+
+        
         setUserList(users);
         setIsLoading(false); // Marca a busca como concluída
+
       } catch (error) {
         console.error("Erro ao recuperar lista de usuários:", error);
         Alert.alert("Erro", "Erro ao recuperar lista de usuários");
       }
     }
+
     buscarUserList();
   }, []); // Executar apenas uma vez ao montar o componente
 

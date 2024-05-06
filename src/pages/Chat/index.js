@@ -4,13 +4,18 @@ import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import { useRoute } from '@react-navigation/native';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase'; // Importe sua configuração do Firebase aqui
-
+import { getAuth } from "firebase/auth";
 export default function Chat() {
     const [messages, setMessages] = useState([]);
     const route = useRoute();
-    const { userId, userName, userFoto } = route.params;
-
+    const { userId, userName, userFoto } = route.params; // dados usuario destinatario
     const [loading, setLoading] = useState(true); // Estado para controlar o ActivityIndicator
+
+     //dados usuario logado
+     const auth = getAuth();
+     const idUsuarioLogado = auth.currentUser.uid;
+     const idRemetente = idUsuarioLogado;
+
 
     useEffect(() => {
         const unsubscribe = carregarMensagens();
@@ -56,11 +61,12 @@ export default function Chat() {
     async function salvarConversaFirestore(userId, userName, message) {
         try {
             await addDoc(collection(db, "chats"), {
-                userId: userId,
+                idRemetente: idRemetente,
+                idDestinatario: userId,
                 text: message.text,
                 createdAt: message.createdAt,
                 user: message.user,
-                userName: userName,
+                nameDestinario: userName,
             });
            // Alert.alert('Mensagem', 'Mensagem enviada com sucesso!');
         } catch (e) {
