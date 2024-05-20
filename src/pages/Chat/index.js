@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Alert, ActivityIndicator } from 'react-native';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import { useRoute } from '@react-navigation/native';
-import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, addDoc,doc, setDoc , serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase'; // Importe sua configuração do Firebase aqui
 import { getAuth } from "firebase/auth";
 export default function Chat() {
@@ -23,7 +23,7 @@ export default function Chat() {
     }, []);
 
    const carregarMensagens = () => {
-    const chatQuery = query(collection(db, 'chats'), orderBy('createdAt', 'desc'));
+    const chatQuery = query(collection(db, 'chats',idRemetente,userId), orderBy('createdAt', 'desc'));
     return onSnapshot(chatQuery, (snapshot) => {
         const loadedMessages = snapshot.docs.map(doc => ({
             _id: doc.id,
@@ -49,7 +49,11 @@ export default function Chat() {
                 };
 
                 // Adicione a mensagem ao Firestore
-                salvarConversaFirestore(userId, userName, messageToAdd);
+                //salvar para o remetente
+                salvarConversaFirestore(idRemetente,userId, userName, messageToAdd);
+                 //salvar para o destinatario
+                 salvarConversaFirestore(userId,idRemetente, userName, messageToAdd);
+
 
             } catch (error) {
                 console.error("Erro ao enviar mensagem para o Firebase:", error);
@@ -57,22 +61,27 @@ export default function Chat() {
         }
     }, [userId, userName]);
 
-    // Salvar mensagem no Firestore
-    async function salvarConversaFirestore(userId, userName, message) {
-        try {
-            await addDoc(collection(db, "chats"), {
-                idRemetente: idRemetente,
-                idDestinatario: userId,
-                text: message.text,
-                createdAt: message.createdAt,
-                user: message.user,
-                nameDestinario: userName,
-            });
-           // Alert.alert('Mensagem', 'Mensagem enviada com sucesso!');
-        } catch (e) {
-            Alert.alert('Erro', 'Erro ao enviar mensagem');
-        }
+   // Salvar mensagem no Firestore
+async function salvarConversaFirestore(idRemetente, userId, userName, message) {
+    try {
+        const docRef = doc(collection(db, "chats", idRemetente, userId));
+        await setDoc(docRef, { 
+            idRemetente: idRemetente,
+            idDestinatario: userId,
+            text: message.text,
+            createdAt: message.createdAt,
+            user: message.user,
+            nameDestinario: userName,  
+        });
+        // Alert.alert('Mensagem', 'Mensagem enviada com sucesso!');
+    } catch (e) {
+        Alert.alert('Erro', 'Erro ao enviar mensagem');
     }
+}
+
+
+
+
 
     return (
         <View style={{ flex: 1, padding: 10 }}>
