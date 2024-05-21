@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Alert } from 'react-native';
+import { View, TextInput, Alert, TouchableOpacity } from 'react-native';
 import { Button,  Image } from '@rneui/themed';
 
 import { styles } from '../Styles/styles';
@@ -9,13 +9,13 @@ import { doc, setDoc } from "firebase/firestore";
 import {db} from '../config/firebase'
 import iconUser from '../../images/iconUser.png';
 
-
 export default function Cadastre({ navigation }) {
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-  
+    const [showPassword, setShowPassword] = useState(false);
+
     const verificarCampoEmail = () => {
      if (nome.trim() === '') {
          Alert.alert('Erro', 'Por favor, preencha o campo de nome');
@@ -94,13 +94,23 @@ export default function Cadastre({ navigation }) {
             value={email}
             onChangeText={text => setEmail(text)} 
           />
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { flex: 1 }]}
             placeholder="Senha"
-            secureTextEntry
+            secureTextEntry={!showPassword}
             value={password}
             onChangeText={text => setPassword(text)}
+            
           />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}style={ {position: 'absolute',
+           right: 10,}}>
+          <Image 
+            source={showPassword ? require('../../images/mostrar_senha.png') : require('../../images/ocultar_senha.png')} 
+            style={{ width: 20, height: 20, marginRight: 10 }} 
+          />
+          </TouchableOpacity>
+        </View>
           <Button
            title="Cadastrar"
            loading={loading} // Use o estado de loading aqui

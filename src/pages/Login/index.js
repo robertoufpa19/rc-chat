@@ -12,7 +12,7 @@ import logoChat from '../../images/icone_lero_lero.png';
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const verificarCampoEmail = () => {
@@ -67,13 +67,23 @@ export default function Login({ navigation }) {
           value={email}
           onChangeText={text => setEmail(text)} 
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          secureTextEntry
-          value={password}
-          onChangeText={text => setPassword(text)}
-        />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TextInput
+            style={[styles.input, { flex: 1 }]}
+            placeholder="Senha"
+            secureTextEntry={!showPassword}
+            value={password}
+            onChangeText={text => setPassword(text)}
+            
+          />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}style={ {position: 'absolute',
+           right: 10,}}>
+          <Image 
+            source={showPassword ? require('../../images/mostrar_senha.png') : require('../../images/ocultar_senha.png')} 
+            style={{ width: 20, height: 20, marginRight: 10 }} 
+          />
+          </TouchableOpacity>
+        </View>
 
          <Button
                title="Entrar"
