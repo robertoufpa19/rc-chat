@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Alert, ActivityIndicator } from 'react-native';
+import { View, Alert, ActivityIndicator, Image, Text } from 'react-native';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import { useRoute } from '@react-navigation/native';
 import { collection, query, orderBy, onSnapshot, addDoc,doc, setDoc , serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase'; // Importe sua configuração do Firebase aqui
 import { getAuth } from "firebase/auth";
+
+
+import fotoPerfilUsuario from '../../images/iconUser.png'; 
+
 export default function Chat() {
     const [messages, setMessages] = useState([]);
     const route = useRoute();
@@ -85,6 +89,21 @@ async function salvarConversaFirestore(idRemetente, userId, userName, message) {
 
     return (
         <View style={{ flex: 1, padding: 10 }}>
+
+           <View style={{ flexDirection: "row", alignItems: "center" }} margin={10}>
+              <Image
+                  source={
+                    userFoto
+                      ? { uri: userFoto }
+                      : require("../../images/perfilpadrao.png")
+                  }
+                  style={{ width: 40, height: 40, borderRadius: 20 }} // Ajuste o tamanho e a forma conforme necessário
+                  />
+                  <Text>{userName}</Text>
+                </View>
+             
+
+
             {loading ? (
                 <ActivityIndicator size="large" color="#00BFFF" /> // Exibe o ActivityIndicator enquanto as mensagens estão sendo carregadas
             ) : (
