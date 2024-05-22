@@ -6,7 +6,6 @@ import { getAuth } from "firebase/auth";
 import { Divider } from '@rneui/themed';
 import { Avatar, Icon } from '@rneui/themed';
 import { styles } from '../Styles/styles';
-import logoContato from '../../images/ic_contato_branco64.png'; 
 
 export default function App({ navigation }) {
   const [userList, setUserList] = useState([]);
@@ -85,7 +84,7 @@ export default function App({ navigation }) {
                 />
                 <View style={{ marginLeft: 10 }}>
                   <Text>{item.nome}</Text>
-                  <Text>{item.UltimaMsg} ultima mensagem</Text>
+                  <Text>{item.UltimaMsg}</Text>
                 </View>
               </View>
               <Divider style={{ marginVertical: 10 }} />
@@ -94,12 +93,6 @@ export default function App({ navigation }) {
         />
       )}
 
-      <TouchableOpacity style={styles.floatingButton} onPress={() => navigation.navigate('Contato')}>
-        <Image
-          source={logoContato}
-          style={{ width: 20, height: 20 }}
-        />
-      </TouchableOpacity>
     </View>
   );
 }

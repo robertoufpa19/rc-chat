@@ -49,4 +49,17 @@ export const styles = StyleSheet.create({
         color: "#A9A9A9"
       },
 
+      floatingButton: {
+        position: 'absolute',
+        width: 50,
+        height: 50,
+        borderRadius: 30,
+        backgroundColor: '#00BFFF',
+        alignItems: 'center',
+        justifyContent: 'center',
+        right: 20,
+        bottom: 20,
+        elevation: 5,
+      },
+
 });

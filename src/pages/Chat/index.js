@@ -89,21 +89,6 @@ async function salvarConversaFirestore(idRemetente, userId, userName, message) {
 
     return (
         <View style={{ flex: 1, padding: 10 }}>
-
-           <View style={{ flexDirection: "row", alignItems: "center" }} margin={10}>
-              <Image
-                  source={
-                    userFoto
-                      ? { uri: userFoto }
-                      : require("../../images/perfilpadrao.png")
-                  }
-                  style={{ width: 40, height: 40, borderRadius: 20 }} // Ajuste o tamanho e a forma conforme necessário
-                  />
-                  <Text>{userName}</Text>
-                </View>
-             
-
-
             {loading ? (
                 <ActivityIndicator size="large" color="#00BFFF" /> // Exibe o ActivityIndicator enquanto as mensagens estão sendo carregadas
             ) : (
@@ -123,7 +108,7 @@ async function salvarConversaFirestore(idRemetente, userId, userName, message) {
                                     backgroundColor: '#0084ff', // Cor de fundo das mensagens enviadas
                                 },
                                 left: {
-                                    backgroundColor: '#f0f0f0', // Cor de fundo das mensagens recebidas
+                                    backgroundColor: '#FFFF', // Cor de fundo das mensagens recebidas
                                 },
                             }}
                         />
