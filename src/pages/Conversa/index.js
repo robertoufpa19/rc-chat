@@ -21,17 +21,15 @@ export default function App({ navigation }) {
         const currentUser = auth.currentUser;
 
         for await (const doc of querySnapshot.docs) {
-          const lastMessage = await getLastMessage(doc.id); // Obter a última mensagem para cada usuário
-          const userData = { id: doc.id, ...doc.data(), UltimaMsg: lastMessage };
-  
-          // verificar se o id do usuario autenticado é igual o da lista de usuario
-          // se for igual não exibir ele na lista de amigos
-          if (currentUser && doc.id !== currentUser.uid) {
-            users.push(userData);
-          }
-        }
-
         
+          const userData = { id: doc.id, ...doc.data() };
+          // verificar se o id do usuario autenticado é igual o da lista de usuario
+          // se for igual não exibir ele na lista de conversas
+          if (currentUser && doc.id !== currentUser.uid) {
+            const ultimaMensagem = await getUltimaMensagem(currentUser.uid, doc.id);
+            users.push({ ...userData, ultimaMensagem });
+          }
+        }    
         setUserList(users);
         setIsLoading(false); // Marca a busca como concluída
 
@@ -44,20 +42,23 @@ export default function App({ navigation }) {
     buscarUserList();
   }, []); // Executar apenas uma vez ao montar o componente
 
-  async function getLastMessage(userId) { 
-    const chatQuery = query(
-      collection(db, 'chats'),
-      orderBy('createdAt', 'desc'),
-      limit(1),
-    );
-    const chatSnapshot = await getDocs(chatQuery);
-    if (!chatSnapshot.empty) {
-      const lastMessage = chatSnapshot.docs[0].data();
-      return lastMessage.text; // Retorna apenas o texto da última mensagem
-    }
-    return ''; // Retorna vazio se não houver mensagens
-  }
+  async function getUltimaMensagem(idRemetente, idDestinatario) {
+    try {
+      const mensagensRef = collection(db, 'chats', idRemetente, idDestinatario);
+      const ultimaMensagemQuery = query(mensagensRef, orderBy('createdAt', 'desc'), limit(1));
+      const querySnapshot = await getDocs(ultimaMensagemQuery);
 
+      if (!querySnapshot.empty) {
+        const ultimaMensagemDoc = querySnapshot.docs[0];
+        return ultimaMensagemDoc.data().text;
+      } else {
+        return "Nenhuma mensagem";
+      }
+    } catch (error) {
+      console.error("Erro ao recuperar a última mensagem:", error);
+      return "Erro ao carregar mensagem";
+    }
+  }
   
   return (
     <View style={{ flex: 1, margin: 10 }}>
@@ -85,7 +86,7 @@ export default function App({ navigation }) {
                 />
                 <View style={{ marginLeft: 10 }}>
                   <Text>{item.nome}</Text>
-                  <Text>{item.UltimaMsg} ultima mensagem</Text>
+                  <Text>{item.ultimaMensagem}</Text>
                 </View>
               </View>
               <Divider style={{ marginVertical: 10 }} />
