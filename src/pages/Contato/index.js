@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text, Alert, FlatList, View, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
-import { collection, getDocs, query, orderBy, limit, getDoc } from "firebase/firestore"; 
+import { collection, getDocs, query, orderBy, limit } from "firebase/firestore"; 
 import { db} from "../config/firebase";
 import { getAuth } from "firebase/auth";
 import { Divider } from '@rneui/themed';

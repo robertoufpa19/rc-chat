@@ -41,6 +41,14 @@ export const styles = StyleSheet.create({
         color: "#00BFFF"
       },
 
+      textSair:{
+        textAlign: 'center',
+        fontSize: 18,
+        marginTop: 30,
+        marginBottom: 10,
+        color: "#FF6347"
+      },
+
       textEsqueceSenha:{
         textAlign: 'center',
         fontSize: 18,
