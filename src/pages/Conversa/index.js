@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text, Alert, FlatList, View, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
-import { collection, getDocs, query, orderBy, limit, getDoc } from "firebase/firestore"; 
+import { collection, getDocs, query, orderBy, limit, getDoc, onSnapshot } from "firebase/firestore"; 
 import { db} from "../config/firebase";
 import { getAuth } from "firebase/auth";
 import { Divider } from '@rneui/themed';
@@ -20,17 +20,20 @@ export default function App({ navigation }) {
         const auth = getAuth();
         const currentUser = auth.currentUser;
 
-        for await (const doc of querySnapshot.docs) {
-        
+        for (const doc of querySnapshot.docs) {
           const userData = { id: doc.id, ...doc.data() };
-          // verificar se o id do usuario autenticado é igual o da lista de usuario
-          // se for igual não exibir ele na lista de conversas
           if (currentUser && doc.id !== currentUser.uid) {
-            const ultimaMensagem = await getUltimaMensagem(currentUser.uid, doc.id);
-            users.push({ ...userData, ultimaMensagem });
+            // Adiciona o listener de mensagens
+            listenToUltimaMensagem(currentUser.uid, doc.id, (ultimaMensagem) => {
+              const updatedUserData = { ...userData, ultimaMensagem };
+              setUserList((prevUsers) => {
+                const otherUsers = prevUsers.filter(user => user.id !== doc.id);
+                return [...otherUsers, updatedUserData];
+              });
+            });
           }
-        }    
-        setUserList(users);
+        }
+
         setIsLoading(false); // Marca a busca como concluída
 
       } catch (error) {
@@ -42,22 +45,20 @@ export default function App({ navigation }) {
     buscarUserList();
   }, []); // Executar apenas uma vez ao montar o componente
 
-  async function getUltimaMensagem(idRemetente, idDestinatario) {
-    try {
-      const mensagensRef = collection(db, 'chats', idRemetente, idDestinatario);
-      const ultimaMensagemQuery = query(mensagensRef, orderBy('createdAt', 'desc'), limit(1));
-      const querySnapshot = await getDocs(ultimaMensagemQuery);
-
+  function listenToUltimaMensagem(idRemetente, idDestinatario, callback) {
+    const mensagensRef = collection(db, 'chats', idRemetente, idDestinatario);
+    const ultimaMensagemQuery = query(mensagensRef, orderBy('createdAt', 'desc'), limit(1));
+    return onSnapshot(ultimaMensagemQuery, (querySnapshot) => {
       if (!querySnapshot.empty) {
         const ultimaMensagemDoc = querySnapshot.docs[0];
-        return ultimaMensagemDoc.data().text;
+        callback(ultimaMensagemDoc.data().text);
       } else {
-        return "Nenhuma mensagem";
+        callback("Nenhuma mensagem");
       }
-    } catch (error) {
+    }, (error) => {
       console.error("Erro ao recuperar a última mensagem:", error);
-      return "Erro ao carregar mensagem";
-    }
+      callback("Erro ao carregar mensagem");
+    });
   }
   
   return (
