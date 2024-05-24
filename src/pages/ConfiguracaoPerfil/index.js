@@ -61,7 +61,7 @@ const selecionarImagem = async () => {
       console.log(result);
       setFotoPerfil(result.assets[0].uri);
     } else {
-      alert('You did not select any image.');
+      Alert.alert('Atenção', 'Você não selecionou uma foto!');
     }
 
   };
