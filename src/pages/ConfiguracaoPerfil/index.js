@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Alert, Text, TouchableOpacity, Image } from 'react-native';
 import { Button } from '@rneui/themed';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+
+import * as ImagePicker from 'expo-image-picker';
 
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -13,7 +14,8 @@ import atualizarFotoPerfil from '../../images/ic_atualizar_foto48.png'; // Image
 export default function Login({ navigation }) {
   const [nomeUsuario, setNomeUsuario] = useState('');
   const [emailUsuario, setEmailUsuario] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // botão salvar
+
   const [fotoPerfil, setFotoPerfil] = useState(null); // Estado para armazenar a foto de perfil
   const auth = getAuth();
   const db = getFirestore();
@@ -24,6 +26,7 @@ export default function Login({ navigation }) {
     } else {
       try {
         setLoading(true);
+       
         const user = auth.currentUser;
         const idUsuarioLogado = user.uid;
 
@@ -32,7 +35,8 @@ export default function Login({ navigation }) {
 
         // Atualizar o nome do usuário no documento
         await updateDoc(userDocRef, {
-          nome: nomeUsuario
+          nome: nomeUsuario,
+          fotoPerfil: fotoPerfil
         });
 
         Alert.alert('Sucesso', 'Dados atualizado com sucesso!');
@@ -40,29 +44,26 @@ export default function Login({ navigation }) {
         console.error("Erro ao atualizar o nome do usuário:", error);
         Alert.alert('Erro', 'Erro ao atualizar o dados do usuário. Por favor, tente novamente.');
       } finally {
+       
         setLoading(false);
       }
     }
   };
 
  // Função para selecionar uma imagem da galeria
-const selecionarImagem = async () => {
-    const options = {
-      title: 'Selecionar Foto de Perfil',
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      }, 
-    }; 
-  
-    // Utilizando a função launchImageLibrary como uma promessa
-    try {
-      const result = await launchImageLibrary(options);
-      // Faça algo com o resultado aqui
-      console.log('Imagem selecionada:', result.uri);
-    } catch (error) {
-      console.error('Erro ao selecionar imagem:', error);
+const selecionarImagem = async () => { 
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      console.log(result);
+      setFotoPerfil(result.assets[0].uri);
+    } else {
+      alert('You did not select any image.');
     }
+
   };
   
 

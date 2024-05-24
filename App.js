@@ -42,9 +42,7 @@ export default function App() {
             headerRight: () => (
               <TouchableOpacity    
                 onPress={() => navigation.navigate("ConfiguracaoPerfil", { 
-                 // userId: route.params.userId, 
-                 // userName: route.params.userName, 
-                 // userFoto: route.params.userFoto 
+      
                 })}
               >
                 <Image 
