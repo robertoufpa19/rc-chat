@@ -37,7 +37,8 @@ export default function App({ navigation }) {
         setIsLoading(false); // Marca a busca como concluída
 
       } catch (error) {
-        console.error("Erro ao recuperar lista de usuários:", error);
+        console.log("Erro ao recuperar lista de usuários:", error);
+        
         Alert.alert("Erro", "Erro ao recuperar lista de usuários");
       }
     }
@@ -56,7 +57,7 @@ export default function App({ navigation }) {
         callback("Nenhuma mensagem");
       }
     }, (error) => {
-      console.error("Erro ao recuperar a última mensagem:", error);
+      console.log("Erro ao recuperar a última mensagem:", error);
       callback("Erro ao carregar mensagem");
     });
   }

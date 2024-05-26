@@ -5,7 +5,7 @@ import { Button } from '@rneui/themed';
 import * as ImagePicker from 'expo-image-picker';
 
 
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged , signOut} from "firebase/auth";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 
 import { styles } from '../Styles/styles';
@@ -111,6 +111,18 @@ const selecionarImagem = async () => {
     return () => unsubscribe();
   }, [auth]);
 
+
+    // Função para deslogar o usuário
+    const handleLogout = async () => {
+      try {
+        await signOut(auth);
+        navigation.navigate('Login');
+      } catch (error) {
+        console.error("Erro ao deslogar o usuário:", error);
+        Alert.alert('Erro', 'Erro ao deslogar o usuário. Por favor, tente novamente.');
+      }
+    };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={selecionarImagem}>
@@ -158,7 +170,7 @@ const selecionarImagem = async () => {
         />
 
         <TouchableOpacity
-          onPress={() => navigation.navigate('Login')}
+          onPress={handleLogout}
         >
           <Text style={styles.textSair}>Sair</Text>
         </TouchableOpacity>
