@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Lero Lero",
-    "slug": "Lero-Lero",
+    "name": "lero",
+    "slug": "lero",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icone_lero_lero.png",
@@ -15,16 +15,24 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.robertouf19.LeroLero"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.robertouf19.LeroLero"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3c559daa-8da0-4b80-b028-158b1068c97a"
+      }
+    },
+    "owner": "robertouf19"
   }
 }

@@ -24,9 +24,7 @@ export default function Login({ navigation }) {
 
   return (
     <View style={styles.container}>
-   
-          <Text style={styles.textEsqueceSenha}>Carregando...</Text>
-    
+     <Text style={styles.textEsqueceSenha}>Carregando...</Text>
       </View>
   
   );
