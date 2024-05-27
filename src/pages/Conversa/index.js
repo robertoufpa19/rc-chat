@@ -86,10 +86,13 @@ export default function App({ navigation }) {
                   }
                   style={{ width: 40, height: 40, borderRadius: 20 }}
                 />
-                <View style={{ marginLeft: 10 }}>
+                <View style={{ marginLeft: 10, flex: 1 }}>
                   <Text>{item.nome}</Text>
-                  <Text>{item.ultimaMensagem}</Text>
+                  <Text numberOfLines={1}  style={{ maxWidth: '75%' }}>
+                  {item.ultimaMensagem}
+                  </Text>
                 </View>
+                
               </View>
               <Divider style={{ marginVertical: 10 }} />
             </TouchableOpacity>
