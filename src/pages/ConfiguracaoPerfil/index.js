@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Alert, Text, TouchableOpacity, Image } from 'react-native';
+import { View, TextInput, Alert, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { Button } from '@rneui/themed';
 
 import * as ImagePicker from 'expo-image-picker';
-
 
 import { getAuth, onAuthStateChanged , signOut} from "firebase/auth";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 
 import { styles } from '../Styles/styles';
-import atualizarFotoPerfil from '../../images/ic_atualizar_foto48.png'; // Imagem padrão da foto de perfil
+import atualizarFotoPerfil from '../../images/ic_atualizar_foto64.png'; // Imagem padrão da foto de perfil
 
 export default function Login({ navigation }) {
   const [nomeUsuario, setNomeUsuario] = useState('');
   const [emailUsuario, setEmailUsuario] = useState('');
   const [loading, setLoading] = useState(false); // botão salvar
-
+  const [loadingProfile, setLoadingProfile] = useState(true); // carregamento do perfil
   const [fotoPerfil, setFotoPerfil] = useState(null); // Estado para armazenar a foto de perfil
   const auth = getAuth();
   const db = getFirestore();
@@ -50,8 +49,8 @@ export default function Login({ navigation }) {
     }
   };
 
- // Função para selecionar uma imagem da galeria
-const selecionarImagem = async () => { 
+  // Função para selecionar uma imagem da galeria
+  const selecionarImagem = async () => { 
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       quality: 1,
@@ -63,10 +62,8 @@ const selecionarImagem = async () => {
     } else {
       Alert.alert('Atenção', 'Você não selecionou uma foto!');
     }
-
   };
   
-
   // Função para obter dados do usuário logado
   async function getUserData(idUsuarioLogado) {
     try {
@@ -94,6 +91,8 @@ const selecionarImagem = async () => {
       }
     } catch (error) {
       console.error("Erro ao obter os dados do usuário:", error);
+    } finally {
+      setLoadingProfile(false); // Define como falso após carregar os dados
     }
   }
 
@@ -105,31 +104,61 @@ const selecionarImagem = async () => {
         getUserData(idUsuarioLogado); // Chama a função para obter os dados do usuário
       } else {
         console.log("Nenhum usuário logado."); 
+        setLoadingProfile(false); // Define como falso se não houver usuário logado
       }
     });
 
     return () => unsubscribe();
   }, [auth]);
 
-
-    // Função para deslogar o usuário
-    const handleLogout = async () => {
-      try {
-        await signOut(auth);
-        navigation.navigate('Login');
-      } catch (error) {
-        console.error("Erro ao deslogar o usuário:", error);
-        Alert.alert('Erro', 'Erro ao deslogar o usuário. Por favor, tente novamente.');
-      }
-    };
+  // Função para deslogar o usuário
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigation.navigate('Login');
+    } catch (error) {
+      console.error("Erro ao deslogar o usuário:", error);
+      Alert.alert('Erro', 'Erro ao deslogar o usuário. Por favor, tente novamente.');
+    }
+  };
 
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={selecionarImagem}>
         {fotoPerfil ? (
-          <Image source={{ uri: fotoPerfil }} style={{ width: 100, height: 100, marginBottom: 20, borderRadius: 50 }} />
+          <View style={{ position: 'relative' }}>
+            <Image source={{ uri: fotoPerfil }} style={{ width: 100, height: 100, marginBottom: 20, borderRadius: 50 }} />
+            {loadingProfile && (
+              <ActivityIndicator
+                size="large"
+                color="#00BFFF"
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  marginTop: -25,
+                  marginLeft: -25,
+                }}
+              />
+            )}
+          </View>
         ) : (
-          <Image source={atualizarFotoPerfil} style={{ width: 100, height: 100, marginBottom: 20 }} />
+          <View style={{ position: 'relative' }}>
+            <Image source={atualizarFotoPerfil} style={{ width: 100, height: 100, marginBottom: 20 }} />
+            {loadingProfile && (
+              <ActivityIndicator
+                size="large"
+                color="#00BFFF"
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  marginTop: -25,
+                  marginLeft: -25,
+                }}
+              />
+            )}
+          </View>
         )}
       </TouchableOpacity>
 
