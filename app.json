@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "rc-chat",
-    "slug": "rc-chat",
+    "name": "Lero Lero",
+    "slug": "Lero-Lero",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icone_lero_lero.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash_lero_lero.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

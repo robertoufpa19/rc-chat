@@ -8,6 +8,7 @@ import Conversa from './src/pages/Conversa';
 import Contato from './src/pages/Contato';
 import CadastroUsuario from './src/pages/CadastroUsuario'
 import ConfiguracaoPerfil from './src/pages/ConfiguracaoPerfil'
+import Splash from './src/pages/Splash'
 
 import {Image, TouchableOpacity} from 'react-native';
 
@@ -16,7 +17,11 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="Splash">
+
+      <Stack.Screen name="Splash" component={Splash} 
+         options={{ headerShown: false }}/>
+         
         <Stack.Screen name="Login" component={Login} 
          options={{ headerShown: false }}/>
         
